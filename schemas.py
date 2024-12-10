@@ -12,11 +12,11 @@ class User(BaseModel):
         orm_mode = True
 
 class TelegramAccountCreate(BaseModel):
-    telegram_id: str  # Замінили int на str для коректного ID Telegram
+    telegram_id: str  # Залишимо як string для коректної обробки Telegram ID
 
 class TelegramAccount(BaseModel):
     id: int
-    telegram_id: str  # Замінили int на str
+    telegram_id: str
 
     class Config:
-       from_attributes = True
+        orm_mode = True

@@ -1,13 +1,12 @@
-from fastapi import Depends, HTTPException, status
-from sqlalchemy.orm import Session
-import models
-import database
+from passlib.context import CryptContext
 
-def authenticate_user(db: Session, username: str, password: str):
-    user = db.query(models.User).filter(models.User.username == username).first()
-    if not user or user.password != password:  # Простий варіант перевірки пароля
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials",
-        )
-    return user
+# Створюємо контекст для роботи з паролями
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# Функція для хешування пароля
+def hash_password(password: str):
+    return pwd_context.hash(password)
+
+# Функція для перевірки пароля
+def verify_password(plain_password: str, hashed_password: str):
+    return pwd_context.verify(plain_password, hashed_password)
