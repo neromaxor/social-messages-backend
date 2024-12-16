@@ -1,7 +1,9 @@
+
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from database import Base
 
+# Модель для користувача
 class User(Base):
     __tablename__ = "users"
 
@@ -12,6 +14,7 @@ class User(Base):
     telegram_accounts = relationship("TelegramAccount", back_populates="owner")
 
 
+# Модель для акаунта Telegram
 class TelegramAccount(Base):
     __tablename__ = "telegram_accounts"
 
@@ -20,4 +23,4 @@ class TelegramAccount(Base):
     telegram_id = Column(String, unique=True, index=True)
 
     owner = relationship("User", back_populates="telegram_accounts")
-
+# models.py

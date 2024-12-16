@@ -1,12 +1,17 @@
 import sqlite3
 
-# Підключення до бази даних (якщо файлу test.db немає, він буде створений)
 conn = sqlite3.connect("test.db")
 cursor = conn.cursor()
 
-# Вивід усіх таблиць у базі даних
+# Перевірка наявності таблиць
 cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
 tables = cursor.fetchall()
-print("Список таблиць у базі даних:", tables)
+print("Список таблиць:", tables)
+
+# Перевірка вмісту таблиці `users`
+cursor.execute("SELECT * FROM users;")
+users = cursor.fetchall()
+print("Користувачі:", users)
 
 conn.close()
+# check_tables.py

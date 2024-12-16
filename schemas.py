@@ -9,14 +9,17 @@ class User(BaseModel):
     username: str
 
     class Config:
-        orm_mode = True
+       from_attributes = True
 
 class TelegramAccountCreate(BaseModel):
-    telegram_id: str  # Залишимо як string для коректної обробки Telegram ID
+    user_id: int  # ID користувача для підключення акаунта
+    telegram_id: str  # Telegram ID
 
 class TelegramAccount(BaseModel):
     id: int
     telegram_id: str
 
     class Config:
-        orm_mode = True
+         from_attributes = True
+
+# schemas.py

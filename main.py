@@ -4,6 +4,9 @@ import models, schemas, database, auth, services
 
 app = FastAPI()
 
+# Ініціалізація бази даних
+database.init_db()
+
 # Додайте цей метод для кореневого маршруту
 @app.get("/")
 def read_root():
@@ -32,7 +35,7 @@ async def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.refresh(db_user)
     return db_user
 
-@app.post("/login/")
+@app.post("/login/")  # Вхід користувача
 async def login(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(models.User).filter(models.User.username == user.username).first()
     
@@ -49,29 +52,39 @@ async def connect_telegram(telegram_account: schemas.TelegramAccountCreate, db: 
     if db_account:
         raise HTTPException(status_code=400, detail="Telegram account already connected")
     
-    db_telegram_account = models.TelegramAccount(**telegram_account.dict())
-    db.add(db_telegram_account)
-    db.commit()
-    db.refresh(db_telegram_account)
-
+    db_user = db.query(models.User).filter(models.User.id == telegram_account.user_id).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    db_telegram_account = models.TelegramAccount(user_id=db_user.id, telegram_id=telegram_account.telegram_id)
+    
     try:
-        # Отримуємо чати користувача через Telegram API
-        chats = services.get_telegram_chats(telegram_account.telegram_id)
+        db.add(db_telegram_account)
+        db.commit()
+        db.refresh(db_telegram_account)
+
+        # Тепер передаємо telegram_id в функцію
+        chats = await services.get_telegram_chats(telegram_account.telegram_id)  
     except Exception as e:
+        db.rollback()
         raise HTTPException(status_code=500, detail=f"Error fetching chats: {str(e)}")
 
     return {"chats": chats}
 
-@app.get("/chats/{telegram_id}")
+@app.get("/chats/{telegram_id}")  # Отримання чатів для конкретного користувача
 async def get_chats(telegram_id: str, db: Session = Depends(get_db)):
     db_account = db.query(models.TelegramAccount).filter(models.TelegramAccount.telegram_id == telegram_id).first()
     if not db_account:
         raise HTTPException(status_code=404, detail="Telegram account not found")
     
     try:
-        # Отримуємо чати користувача через Telegram API
-        chats = services.get_telegram_chats(telegram_id)
+        # Використовуємо await, щоб дочекатися результату від асинхронної функції
+        chats = await services.get_telegram_chats(telegram_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching chats: {str(e)}")
 
     return {"chats": chats}
+
+
+
+# main.py

@@ -1,22 +1,39 @@
 import sqlite3
 
-# Підключення до бази даних (створить файл test.db, якщо його ще немає)
-conn = sqlite3.connect("test.db")
-cursor = conn.cursor()
+# Функція для створення таблиць
+def create_tables():
+    # Підключення до бази даних
+    conn = sqlite3.connect("test.db")
+    cursor = conn.cursor()
 
-# Створення таблиці користувачів (якщо вона не існує)
-cursor.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL
-    );
-""")
+    # Створення таблиці для користувачів (якщо її немає)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL
+        );
+    """)
 
-# Підтвердження змін
-conn.commit()
+    # Створення таблиці для Telegram акаунтів (якщо її немає)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS telegram_accounts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            telegram_id VARCHAR UNIQUE NOT NULL,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        );
+    """)
 
-print("Таблиця 'users' була створена успішно.")
+    # Підтвердження змін
+    conn.commit()
 
-# Закриваємо підключення
-conn.close()
+    # Закриття підключення
+    conn.close()
+
+    print("Таблиці 'users' та 'telegram_accounts' були створені успішно.")
+
+# Викликаємо функцію для створення таблиць
+create_tables()
+
+# init_db.py
