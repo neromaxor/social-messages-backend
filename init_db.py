@@ -36,4 +36,5 @@ def create_tables():
 # Викликаємо функцію для створення таблиць
 create_tables()
 
+
 # init_db.py

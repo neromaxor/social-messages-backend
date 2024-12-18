@@ -18,4 +18,6 @@ Base = declarative_base()
 def init_db():
     import models  # Імпортуємо моделі, щоб вони були доступні для створення таблиць
     Base.metadata.create_all(bind=engine)
+
+
 # database.py

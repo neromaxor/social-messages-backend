@@ -1,29 +1,28 @@
 from telethon import TelegramClient
 import logging
-import asyncio
 
-# Налаштування для логування
 logging.basicConfig(level=logging.DEBUG)
 
-# Ваші налаштування API
-api_id = '23023743'  # Замініть на ваше API ID
-api_hash = '26eb73659882b22b4f8c6bea8a61a951'  # Замініть на ваш API HASH
-api_number = '+380635939802'  # Ваш номер телефону в міжнародному форматі
+# Telegram authorization client
+async def get_telegram_client(session_name: str, api_id: str, api_hash: str):
+    client = TelegramClient(session_name, api_id, api_hash)
+    return client
 
-# Створення клієнта
-client = TelegramClient('session_name', api_id, api_hash)
-
-# Функція для отримання чатів
-async def get_telegram_chats(telegram_id: str):
+async def start_telegram_session(client: TelegramClient, phone: str):
     try:
-        # Підключення до Telegram за номером телефону
-        await client.start(api_number)
+        await client.connect()
+        if not await client.is_user_authorized():
+            await client.send_code_request(phone)
+        return client
+    except Exception as e:
+        logging.error(f"Error during Telegram session start: {e}")
+        return None
 
-        # Отримання всіх чатів
+async def get_telegram_chats(client: TelegramClient):
+    try:
         dialogs = await client.get_dialogs()
         chats = []
         for dialog in dialogs:
-            # Перевірка типу діалогу
             if dialog.is_group:
                 chat_type = "group"
             elif dialog.is_channel:
@@ -37,14 +36,8 @@ async def get_telegram_chats(telegram_id: str):
                 "chat_type": chat_type
             })
 
-        await client.disconnect()
-
-        # Повертаємо список чатів
         return chats
-
     except Exception as e:
-        logging.error(f"Error occurred: {e}")
-        await client.disconnect()
-
-
+        logging.error(f"Error fetching chats: {e}")
+        return []
 #services.py

@@ -13,7 +13,7 @@ class User(BaseModel):
 
 class TelegramAccountCreate(BaseModel):
     user_id: int  # ID користувача для підключення акаунта
-    telegram_id: str  # Telegram ID
+    phone: str  # Номер телефону для авторизації
 
 class TelegramAccount(BaseModel):
     id: int
