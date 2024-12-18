@@ -20,7 +20,7 @@ async def start_telegram_session(client: TelegramClient, phone: str):
 
 async def get_telegram_chats(client: TelegramClient):
     try:
-        dialogs = await client.get_dialogs()
+        dialogs = await client.get_dialogs()  # Викликаємо get_dialogs() на об'єкті клієнта
         chats = []
         for dialog in dialogs:
             if dialog.is_group:
