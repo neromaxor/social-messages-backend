@@ -1,9 +1,0 @@
-fastapi==0.98.0
-uvicorn==0.22.0
-sqlalchemy==2.0.20
-pydantic==1.10.7
-pyrogram==2.0.107
-passlib[bcrypt]==1.7.4
-requests==2.28.2
-telethon==1.38.1
-# pip install -r requirements.txt
