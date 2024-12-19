@@ -107,6 +107,7 @@ async def logout_telegram(user_id: int):
 
 # Отримання чатів для конкретного користувача
 # services.py
+# не працює під питанням
 @app.get("/chats/{telegram_id}")
 async def get_chats(telegram_id: str, db: Session = Depends(get_db)):
     db_account = db.query(models.TelegramAccount).filter(models.TelegramAccount.telegram_id == telegram_id).first()
